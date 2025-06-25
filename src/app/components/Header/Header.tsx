@@ -7,9 +7,6 @@ export default function Header() {
       <Link href="/" aria-label="Home">
         NoteHub
       </Link>
-      <a href="/" aria-label="Home">
-        NoteHub
-      </a>
       <nav aria-label="Main Navigation">
         <ul className={css.navigation}>
           <li>

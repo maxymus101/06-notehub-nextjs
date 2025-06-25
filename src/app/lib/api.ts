@@ -1,6 +1,5 @@
 import axios from "axios";
-import { type Note } from "../notes/page";
-import type { NoteTag } from "../notes/page";
+import type { NoteTag, Note } from "../types/note";
 
 export interface NewNoteContent {
   title: string;
@@ -59,6 +58,12 @@ export const fetchNotes = async (
     }
     throw error;
   }
+};
+
+export const fetchNoteById = async (id: number) => {
+  const res = await axiosConfig.get<Note>(`/notes/${id}`);
+  console.log(res.data);
+  return res.data;
 };
 
 export const createNote = async (content: NewNoteContent): Promise<Note> => {
