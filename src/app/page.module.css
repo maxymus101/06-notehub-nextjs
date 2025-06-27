@@ -1,3 +1,6 @@
+html {
+  height: 100%;
+}
 .page {
   --gray-rgb: 0, 0, 0;
   --gray-alpha-200: rgba(var(--gray-rgb), 0.08);
@@ -27,11 +30,14 @@
   }
 }
 
+
+
 .main {
   display: flex;
   flex-direction: column;
   gap: 32px;
   grid-row-start: 2;
+  flex: 1;
 }
 
 .main ol {
