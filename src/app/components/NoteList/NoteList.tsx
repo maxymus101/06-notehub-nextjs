@@ -1,8 +1,9 @@
 import css from "./NoteList.module.css";
 import { useMutation, useQueryClient } from "@tanstack/react-query"; // Імпортуємо useMutation та useQueryClient
 import toast from "react-hot-toast"; // Імпортуємо toast для повідомлень
+import Link from "next/link";
 import { type Note } from "../../types/note";
-import { deleteNote, type DeletedNoteInfo } from "../../lib/api";
+import { deleteNote, fetchNoteById, type DeletedNoteInfo } from "../../lib/api";
 
 interface NoteListProps {
   notes: Note[];
@@ -41,7 +42,10 @@ export default function NotesList({ notes }: NoteListProps) {
           <p className={css.content}>{note.content}</p>
           <div className={css.footer}>
             <span className={css.tag}>{note.tag}</span>
-            <button className={css.detail_button}>View details</button>
+            <Link className={css.detail_button} href={`/notes/${note.id}`}>
+              {" "}
+              View details
+            </Link>
             <button
               className={css.del_button}
               onClick={() => handleDeleteNote(note.id)} // Викликаємо внутрішній обробник

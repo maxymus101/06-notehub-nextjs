@@ -127,10 +127,6 @@ function InnerNotesContent({ dehydratedState }: { dehydratedState: unknown }) {
         </button>
       </header>
 
-      {/* {(isLoading || isFetching) && <Loader />} */}
-
-      {/* {errorMessage && <ErrorMessage message={errorMessage} onClose={handleCloseErrorMessage} />} */}
-
       {notesToDisplay.length > 0 && <NotesList notes={notesToDisplay} />}
       {!isLoading &&
         !isFetching &&

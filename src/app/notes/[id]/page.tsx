@@ -1,27 +1,31 @@
 import { fetchNoteById } from "../../lib/api";
+import NoteDetailsClient from "./NoteDetails.client";
+
 import css from "./NoteDetail.module.css";
+import {
+  QueryClient,
+  HydrationBoundary,
+  dehydrate,
+} from "@tanstack/react-query";
 
 interface NoteDetailPageProps {
-  params: Promise<{ id: number }>;
+  params: {
+    id: number;
+  };
 }
 
 export default async function NoteDetailPage({ params }: NoteDetailPageProps) {
   const { id } = await params;
-  const note = await fetchNoteById(id);
-  console.log(note);
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: ["note", id],
+    queryFn: () => fetchNoteById(id),
+  });
 
   return (
-    <div className={css.container}>
-      <h1 className={css.title}>{note.title}</h1>
-      <p className={css.content}>{note.content}</p>
-      <div className={css.meta}>
-        <span className={css.tag}>{note.tag}</span>
-        <span className={css.timestamps}>
-          Created: {new Date(note.createdAt).toLocaleString()} | Updated:{" "}
-          {new Date(note.updatedAt).toLocaleString()}
-        </span>
-      </div>
-      {/* Тут можна додати кнопки для редагування або повернення назад */}
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <NoteDetailsClient />
+    </HydrationBoundary>
   );
 }
