@@ -1,5 +1,5 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"; // Імпортуємо для SSR
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query"; // Імпортуємо для SSR
+import { dehydrate } from "@tanstack/react-query";
 import { fetchNotes } from "../lib/api";
 import NotesClient from "./Notes.client";
 

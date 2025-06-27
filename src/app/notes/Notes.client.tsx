@@ -3,11 +3,9 @@
 import { useState, useEffect } from "react";
 import {
   useQuery,
-  useQueryClient,
   QueryClientProvider,
   QueryClient,
   keepPreviousData,
-  dehydrate,
   HydrationBoundary,
 } from "@tanstack/react-query";
 import toast, { Toaster } from "react-hot-toast";
@@ -23,17 +21,13 @@ import { Note } from "../types/note";
 import NotesList from "../components/NoteList/NoteList";
 import SearchBox from "../components/SearchBox/SearchBox";
 import NoteModal from "../components/NoteModal/NoteModal";
-import NoteForm from "../components/NoteForm/NoteForm";
 
 // Інтерфейс для пропсів, які приймає клієнтський компонент від серверного
 interface NotesClientProps {
   dehydratedState: unknown; // Серіалізований стан від TanStack Query
 }
 
-function InnerNotesContent({ dehydratedState }: { dehydratedState: unknown }) {
-  // Створюємо екземпляр QueryClient на клієнтській стороні
-  // Використовуємо `useState` для гарантії, що QueryClient створюється лише один раз.
-  const [queryClient] = useState(() => new QueryClient());
+function InnerNotesContent({  }: NotesClientProps) {
 
   const [currentSearchQuery, setCurrentSearchQuery] = useState("");
   const [debouncedSearchQuery] = useDebounce(currentSearchQuery, 500);
@@ -102,10 +96,10 @@ function InnerNotesContent({ dehydratedState }: { dehydratedState: unknown }) {
   const closeCreateNoteModal = () => setIsNoteModalOpen(false);
 
   // Функція для закриття повідомлення про помилку
-  const handleCloseErrorMessage = () => {
-    setErrorMessage(null);
-    queryClient.invalidateQueries({ queryKey: ["notes"] });
-  };
+  // const handleCloseErrorMessage = () => {
+  //   setErrorMessage(null);
+  //   queryClient.invalidateQueries({ queryKey: ["notes"] });
+  // };
 
   // Локальні змінні для рендерингу.
   const notesToDisplay: Note[] = data?.notes || [];
@@ -143,7 +137,7 @@ function InnerNotesContent({ dehydratedState }: { dehydratedState: unknown }) {
         notesToDisplay.length === 0 &&
         debouncedSearchQuery && (
           <p className={css.noResultsMessage}>
-            No notes found for "{debouncedSearchQuery}".
+            No notes found for `${debouncedSearchQuery}`.
           </p>
         )}
 
