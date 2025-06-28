@@ -1,6 +1,6 @@
 import { QueryClient } from "@tanstack/react-query"; // Імпортуємо для SSR
 import { dehydrate } from "@tanstack/react-query";
-import { fetchNotes } from "../lib/api";
+import { fetchNotes } from "../../lib/api";
 import NotesClient from "./Notes.client";
 
 // Константа для кількості нотаток на сторінці

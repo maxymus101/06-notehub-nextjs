@@ -13,14 +13,14 @@ import { useDebounce } from "use-debounce";
 
 // import Loader from "../../components/Loader/Loader.tsx";
 // import ErrorMessage from "../../components/ErrorMessage/ErrorMessage.tsx";
-import Pagination from "../components/Pagination/Pagination";
+import Pagination from "../../components/Pagination/Pagination";
 import css from "../notes/notes.module.css"; // Шлях до стилів App.module.css
 
-import { fetchNotes, PaginatedNotesResponse } from "../lib/api";
-import { Note } from "../types/note";
-import NotesList from "../components/NoteList/NoteList";
-import SearchBox from "../components/SearchBox/SearchBox";
-import NoteModal from "../components/NoteModal/NoteModal";
+import { fetchNotes, PaginatedNotesResponse } from "../../lib/api";
+import { Note } from "../../types/note";
+import NotesList from "../../components/NoteList/NoteList";
+import SearchBox from "../../components/SearchBox/SearchBox";
+import NoteModal from "../../components/NoteModal/NoteModal";
 
 // Інтерфейс для пропсів, які приймає клієнтський компонент від серверного
 interface NotesClientProps {
