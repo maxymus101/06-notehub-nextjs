@@ -1,7 +1,6 @@
 import { fetchNoteById } from "../../lib/api";
 import NoteDetailsClient from "./NoteDetails.client";
 
-import css from "./NoteDetail.module.css";
 import {
   QueryClient,
   HydrationBoundary,
