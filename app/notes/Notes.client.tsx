@@ -3,37 +3,35 @@
 import { useState, useEffect } from "react";
 import {
   useQuery,
-  QueryClientProvider,
-  QueryClient,
+  useQueryClient,
   keepPreviousData,
-  HydrationBoundary,
 } from "@tanstack/react-query";
 import toast, { Toaster } from "react-hot-toast";
 import { useDebounce } from "use-debounce";
 
-// import Loader from "../../components/Loader/Loader.tsx";
-// import ErrorMessage from "../../components/ErrorMessage/ErrorMessage.tsx";
 import Pagination from "../../components/Pagination/Pagination";
-import css from "../notes/notes.module.css"; // Шлях до стилів App.module.css
+import css from "./NotesPage.module.css"; // Шлях до стилів App.module.css
 
 import { fetchNotes, PaginatedNotesResponse } from "../../lib/api";
+import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import { Note } from "../../types/note";
-import NotesList from "../../components/NoteList/NoteList";
+import NoteList from "../../components/NoteList/NoteList";
 import SearchBox from "../../components/SearchBox/SearchBox";
 import NoteModal from "../../components/NoteModal/NoteModal";
 
-// Інтерфейс для пропсів, які приймає клієнтський компонент від серверного
+
 interface NotesClientProps {
-  dehydratedState: unknown; // Серіалізований стан від TanStack Query
+  initialNotes: PaginatedNotesResponse; 
 }
 
-function InnerNotesContent({  }: NotesClientProps) {
+export default function NotesClient({ initialNotes }: NotesClientProps) {
+  const queryClient = useQueryClient(); // useQueryClient тепер викликається в правильному контексті
 
   const [currentSearchQuery, setCurrentSearchQuery] = useState("");
   const [debouncedSearchQuery] = useDebounce(currentSearchQuery, 500);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(initialNotes.page || 1); // Використовуємо початкову сторінку з SSR даних
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false); 
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -46,10 +44,12 @@ function InnerNotesContent({  }: NotesClientProps) {
     isSuccess,
     isFetching,
   } = useQuery<PaginatedNotesResponse, Error>({
-    queryKey: ["notes", currentPage, 10, debouncedSearchQuery],
-    queryFn: () => fetchNotes(currentPage, 10, debouncedSearchQuery),
-    enabled: true,
+    queryKey: ["notes", currentPage, 10, debouncedSearchQuery], 
+    queryFn: () => fetchNotes(currentPage, 10, debouncedSearchQuery), 
+    enabled: true, 
     placeholderData: keepPreviousData,
+    initialData: initialNotes, 
+    staleTime: 60 * 1000, 
   });
 
   const notifyNoNotesFound = () =>
@@ -68,27 +68,21 @@ function InnerNotesContent({  }: NotesClientProps) {
     if (isSuccess && debouncedSearchQuery && (data?.notes || []).length === 0) {
       notifyNoNotesFound();
     }
-  }, [
-    isSuccess,
-    data,
-    debouncedSearchQuery,
-    isError,
-    queryError,
-    errorMessage,
-  ]);
+  }, [isSuccess, data, debouncedSearchQuery, isError, queryError, errorMessage]);
+
 
   // Обробник пошуку:
   const handleSearchTermChange = (newQuery: string) => {
     setCurrentSearchQuery(newQuery);
-    setCurrentPage(1);
-    setErrorMessage(null);
+    setCurrentPage(1); 
+    setErrorMessage(null); 
   };
 
   // Обробник зміни сторінки для Pagination компонента
   const handlePageClick = ({ selected }: { selected: number }) => {
     setCurrentPage(selected + 1);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    setErrorMessage(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setErrorMessage(null); 
   };
 
   // Функції для відкриття та закриття модального вікна створення нотатки.
@@ -96,20 +90,23 @@ function InnerNotesContent({  }: NotesClientProps) {
   const closeCreateNoteModal = () => setIsNoteModalOpen(false);
 
   // Функція для закриття повідомлення про помилку
-  // const handleCloseErrorMessage = () => {
-  //   setErrorMessage(null);
-  //   queryClient.invalidateQueries({ queryKey: ["notes"] });
-  // };
+  const handleCloseErrorMessage = () => {
+    setErrorMessage(null); 
+    queryClient.invalidateQueries({ queryKey: ["notes"] });
+  };
 
   // Локальні змінні для рендерингу.
   const notesToDisplay: Note[] = data?.notes || [];
   const totalPagesToDisplay: number = data?.totalPages ?? 0;
 
-  return (
-    <div className={css.notes}>
-      <header className={css.toolbar}>
-        <SearchBox onSearch={handleSearchTermChange} />
+  console.log("Notes to display in Notes.client.tsx render:", notesToDisplay);
+  console.log("Total pages to display in Notes.client.tsx:", totalPagesToDisplay);
 
+  return (
+    <div className={css.app}>
+      <header className={css.toolbar}>
+        <SearchBox onSearch={handleSearchTermChange} /> 
+        
         <Pagination
           pageCount={totalPagesToDisplay}
           currentPage={currentPage}
@@ -121,41 +118,27 @@ function InnerNotesContent({  }: NotesClientProps) {
         </button>
       </header>
 
-      {notesToDisplay.length > 0 && <NotesList notes={notesToDisplay} />}
-      {!isLoading &&
-        !isFetching &&
-        !isError &&
-        notesToDisplay.length === 0 &&
-        !debouncedSearchQuery && (
-          <p className={css.initialMessage}>
-            Start by searching for notes or create a new one!
-          </p>
-        )}
-      {!isLoading &&
-        !isFetching &&
-        !isError &&
-        notesToDisplay.length === 0 &&
-        debouncedSearchQuery && (
-          <p className={css.noResultsMessage}>
-            No notes found for `${debouncedSearchQuery}`.
-          </p>
-        )}
+      
+      
+      {errorMessage && <ErrorMessage message={errorMessage} onClose={handleCloseErrorMessage} />}
 
-      <Toaster />
+      {notesToDisplay.length > 0 && (
+        <NoteList notes={notesToDisplay} /> 
+      )}
+      {!isLoading && !isFetching && !isError && notesToDisplay.length === 0 && !debouncedSearchQuery && (
+        <p className={css.initialMessage}>Start by searching for notes or create a new one!</p>
+      )}
+      {!isLoading && !isFetching && !isError && notesToDisplay.length === 0 && debouncedSearchQuery && (
+        <p className={css.noResultsMessage}>No notes found for &quot;{debouncedSearchQuery}&quot;.</p>
+      )}
 
-      {isNoteModalOpen && <NoteModal onClose={closeCreateNoteModal} />}
+      <Toaster /> 
+
+      {isNoteModalOpen && (
+        <NoteModal 
+          onClose={closeCreateNoteModal} 
+        />
+      )}
     </div>
-  );
-}
-
-export default function NotesClient({ dehydratedState }: NotesClientProps) {
-  const [queryClient] = useState(() => new QueryClient());
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <HydrationBoundary state={dehydratedState}>
-        <InnerNotesContent dehydratedState={dehydratedState} />
-      </HydrationBoundary>
-    </QueryClientProvider>
   );
 }

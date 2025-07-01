@@ -15,8 +15,13 @@ export interface PaginatedNotesResponse {
 }
 
 export interface DeletedNoteInfo {
-  message: string;
   deletedNoteId: number;
+  title: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string
+  tag: NoteTag;
+
 }
 
 const BASE_URL = "https://notehub-public.goit.study/api";
@@ -60,9 +65,9 @@ export const fetchNotes = async (
   }
 };
 
-export const fetchNoteById = async (id: number) => {
+export const fetchNoteById = async (id: number): Promise<Note> =>  {
   const res = await axiosConfig.get<Note>(`/notes/${id}`);
-  console.log(res.data);
+  console.log(res);
   return res.data;
 };
 

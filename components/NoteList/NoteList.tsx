@@ -9,7 +9,7 @@ interface NoteListProps {
   notes: Note[];
 }
 
-export default function NotesList({ notes }: NoteListProps) {
+export default function NoteList({ notes }: NoteListProps) {
   const queryClient = useQueryClient(); // Ініціалізуємо queryClient
 
   // === useMutation для видалення нотатки ===
@@ -43,7 +43,7 @@ export default function NotesList({ notes }: NoteListProps) {
           <div className={css.footer}>
             <span className={css.tag}>{note.tag}</span>
             <Link className={css.detail_button} href={`/notes/${note.id}`}>
-              {" "}
+              
               View details
             </Link>
             <button
