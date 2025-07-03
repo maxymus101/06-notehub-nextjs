@@ -37,15 +37,15 @@ export default function NotesClient({ initialNotes }: NotesClientProps) {
 
   // === useQuery для отримання нотаток ===
   const {
-    data,
+    data, 
     error: queryError,
     isLoading,
     isError,
     isSuccess,
     isFetching,
   } = useQuery<PaginatedNotesResponse, Error>({
-    queryKey: ["notes", currentPage, 10, debouncedSearchQuery], 
-    queryFn: () => fetchNotes(currentPage, 10, debouncedSearchQuery), 
+    queryKey: ["notes", currentPage, 12, debouncedSearchQuery], 
+    queryFn: () => fetchNotes(currentPage, 12, debouncedSearchQuery), 
     enabled: true, 
     placeholderData: keepPreviousData,
     initialData: initialNotes, 
@@ -107,18 +107,17 @@ export default function NotesClient({ initialNotes }: NotesClientProps) {
       <header className={css.toolbar}>
         <SearchBox onSearch={handleSearchTermChange} /> 
         
-        <Pagination
+        { notesToDisplay.length > 0 && (<Pagination
           pageCount={totalPagesToDisplay}
           currentPage={currentPage}
           onPageChange={handlePageClick}
-        />
+        />)}
 
         <button className={css.button} onClick={openCreateNoteModal}>
           Create note +
         </button>
       </header>
 
-      
       
       {errorMessage && <ErrorMessage message={errorMessage} onClose={handleCloseErrorMessage} />}
 

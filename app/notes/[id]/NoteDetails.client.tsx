@@ -31,7 +31,7 @@ const NoteDetailClient = () => {
           <button className={css.editBtn}>Edit note</button>
         </div>
         <p className={css.content}>{note.content}</p>
-        <p className={css.date}>{note.updatedAt}</p>
+        <p className={css.date}>{note.createdAt}</p>
       </div>
     </div>
   );
