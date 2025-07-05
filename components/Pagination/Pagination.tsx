@@ -2,23 +2,23 @@ import ReactPaginate from "react-paginate";
 import css from "./Pagination.module.css";
 
 interface PaginationProps {
-  pageCount: number;
+  totalPages: number;
   currentPage: number;
   onPageChange: ({ selected }: { selected: number }) => void;
 }
 
 export default function Pagination({
-  pageCount,
+  totalPages,
   currentPage,
   onPageChange,
 }: PaginationProps) {
-  if (pageCount <= 1) {
+  if (totalPages <= 1) {
     return null;
   }
 
   return (
     <ReactPaginate
-      pageCount={pageCount} // Загальна кількість сторінок
+      pageCount={totalPages} // Загальна кількість сторінок
       pageRangeDisplayed={5} // Кількість видимих номерів сторінок
       marginPagesDisplayed={1} // Кількість номерів сторінок по краях
       onPageChange={onPageChange} // Обробник зміни сторінки

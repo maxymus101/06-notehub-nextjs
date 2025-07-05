@@ -44,7 +44,7 @@ export default function NotesClient({ initialNotes }: NotesClientProps) {
     isSuccess,
     isFetching,
   } = useQuery<PaginatedNotesResponse, Error>({
-    queryKey: ["notes", currentPage, 12, debouncedSearchQuery], 
+    queryKey: ["notes", currentPage, debouncedSearchQuery], 
     queryFn: () => fetchNotes(currentPage, 12, debouncedSearchQuery), 
     enabled: true, 
     placeholderData: keepPreviousData,
@@ -108,7 +108,7 @@ export default function NotesClient({ initialNotes }: NotesClientProps) {
         <SearchBox onSearch={handleSearchTermChange} /> 
         
         { notesToDisplay.length > 0 && (<Pagination
-          pageCount={totalPagesToDisplay}
+          totalPages={totalPagesToDisplay}
           currentPage={currentPage}
           onPageChange={handlePageClick}
         />)}
