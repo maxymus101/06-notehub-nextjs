@@ -18,6 +18,7 @@ import { Note } from "../../types/note";
 import NoteList from "../../components/NoteList/NoteList";
 import SearchBox from "../../components/SearchBox/SearchBox";
 import NoteModal from "../../components/NoteModal/NoteModal";
+import Loading from "../loading";
 
 
 interface NotesClientProps {
@@ -49,7 +50,6 @@ export default function NotesClient({ initialNotes }: NotesClientProps) {
     enabled: true, 
     placeholderData: keepPreviousData,
     initialData: initialNotes, 
-    staleTime: 60 * 1000, 
   });
 
   const notifyNoNotesFound = () =>
@@ -79,8 +79,8 @@ export default function NotesClient({ initialNotes }: NotesClientProps) {
   };
 
   // Обробник зміни сторінки для Pagination компонента
-  const handlePageClick = ({ selected }: { selected: number }) => {
-    setCurrentPage(selected + 1);
+  const handlePageClick = (page: number) => {
+    setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setErrorMessage(null); 
   };
@@ -99,15 +99,12 @@ export default function NotesClient({ initialNotes }: NotesClientProps) {
   const notesToDisplay: Note[] = data?.notes || [];
   const totalPagesToDisplay: number = data?.totalPages ?? 0;
 
-  console.log("Notes to display in Notes.client.tsx render:", notesToDisplay);
-  console.log("Total pages to display in Notes.client.tsx:", totalPagesToDisplay);
-
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
         <SearchBox onSearch={handleSearchTermChange} /> 
         
-        { notesToDisplay.length > 0 && (<Pagination
+        {notesToDisplay.length > 0 && totalPagesToDisplay > 1 && (<Pagination
           totalPages={totalPagesToDisplay}
           currentPage={currentPage}
           onPageChange={handlePageClick}
@@ -118,6 +115,7 @@ export default function NotesClient({ initialNotes }: NotesClientProps) {
         </button>
       </header>
 
+          {(isLoading || isFetching) && <Loading/>}
       
       {errorMessage && <ErrorMessage message={errorMessage} onClose={handleCloseErrorMessage} />}
 

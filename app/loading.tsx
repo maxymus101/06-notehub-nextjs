@@ -1,5 +1,12 @@
+import css from "./loading.module.css";
+
 const Loading = () => {
-  return <p>Loading, please wait...</p>;
+  return (
+    <div className={css.loaderBackdrop}>
+      <div className={css.spinner}></div>
+      <p className={css.loadingText}>Loading...</p>
+    </div>
+  );
 };
 
 export default Loading;
